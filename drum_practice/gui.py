@@ -60,9 +60,11 @@ class MainWindow(QtWidgets.QWidget):
         if not path:
             return
         try:
-            self.notes = parse_pdf(path)
+            self.notes, bpm = parse_pdf(path)
             if not self.notes:
                 raise RuntimeError("No drum notes found in PDF")
+            if bpm:
+                self.bpm_spin.setValue(bpm)
             self.sheet.setPlainText("\n".join(f"{n.time}: {n.name}" for n in self.notes))
             self.progress.setMaximum(len(self.notes))
             self.current_index = 0

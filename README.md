@@ -24,4 +24,4 @@ Execute the GUI with:
 python -m drum_practice.gui
 ```
 
-Load a PDF containing simple drum notation keywords (kick, snare, hi-hat). Select a MIDI input device when starting playback. The application will show note accuracy after stopping.
+Load a PDF containing simple drum notation keywords (kick, snare, hi-hat). If the PDF also contains a text like "120 BPM" the tempo spin box will be set automatically. Select a MIDI input device when starting playback. The application will show note accuracy after stopping.
