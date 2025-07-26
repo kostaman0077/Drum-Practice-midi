@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import pdfplumber
 
 @dataclass
@@ -8,19 +8,25 @@ class DrumNote:
     name: str
 
 
-def parse_pdf(path: str) -> List[DrumNote]:
-    """Parse a PDF file for simple drum notation keywords.
+def parse_pdf(path: str) -> Tuple[List[DrumNote], Optional[int]]:
+    """Parse a PDF file for simple drum notation keywords and BPM.
 
     This is a placeholder implementation that looks for text
     containing 'kick', 'snare', or 'hi-hat' and assigns each
     word to successive beats.
     """
     notes: List[DrumNote] = []
+    bpm: Optional[int] = None
     try:
         with pdfplumber.open(path) as pdf:
             beat = 0
             for page in pdf.pages:
                 text = page.extract_text() or ""
+                if bpm is None:
+                    import re
+                    match = re.search(r"(\d+)\s*bpm", text, re.IGNORECASE)
+                    if match:
+                        bpm = int(match.group(1))
                 for word in text.split():
                     lower = word.lower()
                     if lower in {"kick", "snare", "hi-hat", "hihat"}:
@@ -28,7 +34,7 @@ def parse_pdf(path: str) -> List[DrumNote]:
                         beat += 1
     except Exception as e:
         raise RuntimeError(f"Failed to parse PDF: {e}")
-    return notes
+    return notes, bpm
 
 
 def calculate_accuracy(expected: List[DrumNote], performed: List[Tuple[float, str]]) -> float:
