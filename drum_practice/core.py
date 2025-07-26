@@ -27,9 +27,19 @@ def parse_pdf(path: str) -> Tuple[List[DrumNote], Optional[int]]:
                     match = re.search(r"(\d+)\s*bpm", text, re.IGNORECASE)
                     if match:
                         bpm = int(match.group(1))
-                for word in text.split():
-                    lower = word.lower()
-                    if lower in {"kick", "snare", "hi-hat", "hihat"}:
+
+                # Normalize text for simple drum keyword search
+                cleaned = (text.replace("hi hat", "hi-hat")
+                               .replace("HI HAT", "hi-hat")
+                               .replace("–", "-")
+                               .replace("—", "-")
+                               .replace("‑", "-"))
+                import re
+                for word in re.findall(r"\b[\w-]+\b", cleaned):
+                    lower = word.lower().strip(".,;:!?")
+                    if lower in {"hihat", "hi-hat"}:
+                        lower = "hi-hat"
+                    if lower in {"kick", "snare", "hi-hat"}:
                         notes.append(DrumNote(time=beat, name=lower))
                         beat += 1
     except Exception as e:
