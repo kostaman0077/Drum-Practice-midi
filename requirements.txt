@@ -1,0 +1,5 @@
+PyQt5
+pdfplumber
+mido
+python-rtmidi
+pygame
